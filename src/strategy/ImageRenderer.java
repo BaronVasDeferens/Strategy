@@ -35,7 +35,16 @@ public class ImageRenderer {
         //entities.add(new Entity(loadImage("ship01.png"), image.getWidth() / 2, image.getHeight() / 2));
 
         hexmap = new HexMap(22,32);
-        hexmaprenderer = new HexMapRenderer(hexmap, backgroundImage.getWidth(), backgroundImage.getHeight(), 100);
+        hexmaprenderer = new HexMapRenderer(
+                hexmap,
+                backgroundImage.getWidth(),
+                backgroundImage.getHeight(),
+                100);
+
+        PointerInfo pInfo = MouseInfo.getPointerInfo();
+
+        currentMasterPosX = pInfo.getLocation().x;
+        currentMasterPosY = pInfo.getLocation().y;
     }
 
     public BufferedImage update() {
@@ -45,7 +54,6 @@ public class ImageRenderer {
         int x = pInfo.getLocation().x;
         int y = pInfo.getLocation().y;
 
-        // LEFT - TO - RIGHT
         // Scroll region : right
         if (x >= image.getWidth() - 5) {
             currentMasterPosX = currentMasterPosX + Math.abs(priorMouseX - x);
@@ -184,9 +192,14 @@ public class ImageRenderer {
         Polygon p = hexmaprenderer.getPolygon(x,y);
 
         if (p != null) {
-            System.out.println("press");
+
             Hex h = hexmaprenderer.getHexFromPoly(p);
-            hexmap.select(h);
+
+            if (h.isSelected())
+                hexmap.deselect(h);
+            else
+                hexmap.select(h);
+
             hexmaprenderer.requiresUpdate = true;
         }
     }

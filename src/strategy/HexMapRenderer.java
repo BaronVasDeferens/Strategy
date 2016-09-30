@@ -21,9 +21,8 @@ public class HexMapRenderer {
     int beginDrawingFromX, beginDrawingFromY;
 
     public boolean showCoordinates = true;
-
     boolean requiresUpdate = true;
-
+    public Color hexOutlineColor = Color.WHITE;
     Random rando;
 
     public HexMapRenderer(HexMap hxMap, int width, int height, int hexagonSize) {
@@ -70,7 +69,8 @@ public class HexMapRenderer {
                 p.addPoint(x + (hexagonSize / 2), (int) (.8660 * 2 * hexagonSize + y));
                 p.addPoint(x, y + (int) (.8660 * hexagonSize));
                 
-                g.setColor(Color.BLACK);
+                g.setColor(hexOutlineColor);
+                g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.25f));
                 g.drawPolygon(p);
 
                 //associate a hex with this polygon
@@ -134,7 +134,7 @@ public class HexMapRenderer {
         if (requiresUpdate == false)
             return cachedImage;
 
-        System.out.println("RE-RENDERING...");
+        //System.out.println("RE-RENDERING...");
 
         BufferedImage newImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
         Graphics2D g = newImage.createGraphics();
@@ -210,7 +210,7 @@ public class HexMapRenderer {
                 }
 
                 //Draw basic polygon 
-                g.setColor(Color.BLACK);
+                g.setColor(hexOutlineColor);
                 g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.25f));
                 g.drawPolygon(p);
 

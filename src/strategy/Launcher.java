@@ -2,6 +2,7 @@ package strategy;
 
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
+import java.awt.event.MouseWheelEvent;
 
 
 public class Launcher {
@@ -79,15 +80,19 @@ public class Launcher {
 
     }
 
+    public void mouseWheelMoved(MouseWheelEvent e) {
+
+    }
 
     public void mouseEntered (MouseEvent e) {
 
     }
 
 
-    public void mouseExited (MouseEvent e) {
+    public void mouseExited(MouseEvent e) {
 
     }
+
 
 
 }

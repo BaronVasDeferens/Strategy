@@ -1,13 +1,10 @@
 package strategy;
 
 import javax.swing.*;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
+import java.awt.event.*;
 
 
-public class GameFrame extends JFrame implements KeyListener, MouseListener {
+public class GameFrame extends JFrame implements KeyListener, MouseListener, MouseWheelListener {
 
     Launcher launcher;
 
@@ -19,6 +16,7 @@ public class GameFrame extends JFrame implements KeyListener, MouseListener {
 
         addKeyListener(this);
         addMouseListener(this);
+        addMouseWheelListener(this);
         requestFocus();
 
     }
@@ -37,7 +35,12 @@ public class GameFrame extends JFrame implements KeyListener, MouseListener {
     public void mouseReleased (MouseEvent e) {
 
     }
-    
+
+    @Override
+    public void mouseWheelMoved(MouseWheelEvent e) {
+        launcher.mouseWheelMoved(e);
+    }
+
     @Override
     public void mouseEntered (MouseEvent e) {
 
