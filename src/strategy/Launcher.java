@@ -14,6 +14,8 @@ public class Launcher {
     GameFrame gameFrame;
     DrawPanel drawPanel;
 
+    static int fullScreenWidth, fullScreenHeight;
+
     public Launcher() {
 
         gameFrame = new GameFrame(this);
@@ -26,7 +28,7 @@ public class Launcher {
             System.out.println(e.toString());
         }
 
-        renderer = new ImageRenderer(gameFrame.getWidth(), gameFrame.getHeight());
+        renderer = new ImageRenderer(fullScreenWidth, fullScreenHeight);
         drawPanel = new DrawPanel(renderer);
         drawPanel.setSize(gameFrame.getWidth(), gameFrame.getHeight());
         drawPanel.setDoubleBuffered(true);
@@ -50,6 +52,9 @@ public class Launcher {
             if (devices[i].isFullScreenSupported()) {
                 System.out.println("Fullscreen: yes");
                 devices[i].setFullScreenWindow(frame);
+                fullScreenWidth = devices[i].getDisplayMode().getWidth();
+                fullScreenHeight = devices[i].getDisplayMode().getHeight();
+                return;
             }
         }
     }
