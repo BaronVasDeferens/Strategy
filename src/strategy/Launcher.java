@@ -30,7 +30,7 @@ public class Launcher {
 
         renderer = new ImageRenderer(fullScreenWidth, fullScreenHeight);
         drawPanel = new DrawPanel(renderer);
-        drawPanel.setSize(gameFrame.getWidth(), gameFrame.getHeight());
+        drawPanel.setSize(fullScreenWidth, fullScreenHeight);
         drawPanel.setDoubleBuffered(true);
 
         gameFrame.add(drawPanel);
@@ -86,6 +86,15 @@ public class Launcher {
     }
 
     public void mouseWheelMoved(MouseWheelEvent e) {
+        // wheel DOWN : zoom in
+        if (e.getWheelRotation() > 0) {
+            renderer.zoomIn();
+
+        }
+        else {
+            // wheel UP : zoom out
+            renderer.zoomOut();
+        }
 
     }
 

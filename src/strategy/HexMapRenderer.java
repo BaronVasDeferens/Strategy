@@ -11,30 +11,28 @@ import java.util.Random;
  */
 public class HexMapRenderer {
 
-    HexMap hexMap;
-    GameMaster gm;
-    BufferedImage cachedImage;
+    private HexMap hexMap;
+    private GameMaster gm;
+    private BufferedImage cachedImage;
 
-    int hexagonSize;
-    int width, height;
+    private int hexSize;
+    private int width, height;
+    private int beginDrawingFromX, beginDrawingFromY;
 
-    int beginDrawingFromX, beginDrawingFromY;
-
-    public boolean showCoordinates = true;
-    boolean requiresUpdate = true;
+    private boolean showCoordinates = true;
+    private boolean requiresUpdate = true;
     public Color hexOutlineColor = Color.WHITE;
     Random rando;
 
-    public HexMapRenderer(HexMap hxMap, int width, int height, int hexagonSize) {
+    public HexMapRenderer(HexMap hexMap, int width, int height, int hexSize) {
 
-        hexMap = hxMap;
-
+        this.hexMap = hexMap;
         this.width = width;
         this.height = height;
-        this.hexagonSize = hexagonSize;
+        this.hexSize = hexSize;
 
-        beginDrawingFromX = (int)(0.25f * hexagonSize);
-        beginDrawingFromY = (int)(0.25f * hexagonSize);
+        beginDrawingFromX = (int)(0.25f * hexSize);
+        beginDrawingFromY = (int)(0.25f * hexSize);
 
         rando = new Random();
 
@@ -54,7 +52,7 @@ public class HexMapRenderer {
 
             for (int j = 0; j < cols; j++) {
                 if ((j % 2) != 0) {
-                    y = beginDrawingFromY + (int) (.8660 * hexagonSize);
+                    y = beginDrawingFromY + (int) (.8660 * hexSize);
                 } else {
                     y = beginDrawingFromY;
                 }
@@ -62,12 +60,12 @@ public class HexMapRenderer {
                 java.awt.Polygon p = new java.awt.Polygon();
                 p.reset();
 
-                p.addPoint(x + (hexagonSize / 2), y);
-                p.addPoint(x + (hexagonSize / 2) + hexagonSize, y);
-                p.addPoint(x + 2 * hexagonSize, (int) (.8660 * hexagonSize + y));
-                p.addPoint(x + (hexagonSize / 2) + hexagonSize, (int) (.8660 * 2 * hexagonSize + y));
-                p.addPoint(x + (hexagonSize / 2), (int) (.8660 * 2 * hexagonSize + y));
-                p.addPoint(x, y + (int) (.8660 * hexagonSize));
+                p.addPoint(x + (hexSize / 2), y);
+                p.addPoint(x + (hexSize / 2) + hexSize, y);
+                p.addPoint(x + 2 * hexSize, (int) (.8660 * hexSize + y));
+                p.addPoint(x + (hexSize / 2) + hexSize, (int) (.8660 * 2 * hexSize + y));
+                p.addPoint(x + (hexSize / 2), (int) (.8660 * 2 * hexSize + y));
+                p.addPoint(x, y + (int) (.8660 * hexSize));
                 
                 g.setColor(hexOutlineColor);
                 g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.25f));
@@ -80,20 +78,20 @@ public class HexMapRenderer {
                 //Coordinates
                 if (showCoordinates) {
                     g.setColor(Color.GRAY);
-                    g.drawString("[" + hexMap.hexArray[i][j].getCol() + "," + hexMap.hexArray[i][j].getRow() + "]", (x + (int) (hexagonSize / 2)), y + (int) (hexagonSize / 2));
+                    g.drawString("[" + hexMap.hexArray[i][j].getCol() + "," + hexMap.hexArray[i][j].getRow() + "]", (x + (int) (hexSize / 2)), y + (int) (hexSize / 2));
                 }
 
                 //scoot the pencil over
-                x = x + (hexagonSize / 2) + hexagonSize;
+                x = x + (hexSize / 2) + hexSize;
 
             }// for j (columns)
 
             //Reset for the next row
-            beginDrawingFromY += (int) 2 * (.8660 * hexagonSize);
+            beginDrawingFromY += (int) 2 * (.8660 * hexSize);
             x = beginDrawingFromX;
 
             if ((i % 2) != 0) {
-                y = beginDrawingFromY + (int) (.8660 * hexagonSize);
+                y = beginDrawingFromY + (int) (.8660 * hexSize);
             } else {
                 y = beginDrawingFromY;
             }
@@ -104,32 +102,26 @@ public class HexMapRenderer {
         
     }
 
-    public void setDimensions() {
-        
-        beginDrawingFromX = (int)(0.25f * hexagonSize);
-        beginDrawingFromY = (int)(0.25f * hexagonSize);
-
-        //The formula for the image size is:
-        //(hexSize * 1.5 * cols + ( 4 * hexSize)) by (hexSize * 1.5 * rows + ( 4 * hexSize))
-        //int sizeX = (int) ((hexagonSize * 2 * cols) + (4 * hexagonSize));
-        //int sizeY = (int) ((hexagonSize * 2 * rows) + (4 * hexagonSize));
-        
+    public void requestUpdate() {
+        requiresUpdate = true;
     }
-    
     
 
     //SET HEXAGON SIZE
     public synchronized void setHexSize(int newSize) {
-        hexagonSize = newSize;
+        hexSize = newSize;
+        beginDrawingFromX = (int)(0.25f * hexSize);
+        beginDrawingFromY = (int)(0.25f * hexSize);
         requiresUpdate = true;
+        //renderHexmap();
     }
 
     public int getHexSize() {
-        return (hexagonSize);
+        return (hexSize);
     }
 
     
-    public BufferedImage renderHexmap () {
+    public synchronized BufferedImage renderHexmap () {
 
         if (requiresUpdate == false)
             return cachedImage;
@@ -142,8 +134,8 @@ public class HexMapRenderer {
         g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         g.setStroke(new BasicStroke(6.0f));
 
-        beginDrawingFromX = (int)(0.25f * hexagonSize);
-        beginDrawingFromY = (int)(0.25f * hexagonSize);
+        beginDrawingFromX = (int)(0.25f * hexSize);
+        beginDrawingFromY = (int)(0.25f * hexSize);
 
         int x = beginDrawingFromX;
         int y = beginDrawingFromY;
@@ -156,7 +148,7 @@ public class HexMapRenderer {
 
             for (int j = 0; j < cols; j++) {
                 if ((j % 2) != 0) {
-                    y = beginDrawingFromY + (int) (.8660 * hexagonSize);
+                    y = beginDrawingFromY + (int) (.8660 * hexSize);
                 } else {
                     y = beginDrawingFromY;
                 }
@@ -164,12 +156,12 @@ public class HexMapRenderer {
                 java.awt.Polygon p = new java.awt.Polygon();
                 p.reset();
 
-                p.addPoint(x + (hexagonSize / 2), y);
-                p.addPoint(x + (hexagonSize / 2) + hexagonSize, y);
-                p.addPoint(x + 2 * hexagonSize, (int) (.8660 * hexagonSize + y));
-                p.addPoint(x + (hexagonSize / 2) + hexagonSize, (int) (.8660 * 2 * hexagonSize + y));
-                p.addPoint(x + (hexagonSize / 2), (int) (.8660 * 2 * hexagonSize + y));
-                p.addPoint(x, y + (int) (.8660 * hexagonSize));
+                p.addPoint(x + (hexSize / 2), y);
+                p.addPoint(x + (hexSize / 2) + hexSize, y);
+                p.addPoint(x + 2 * hexSize, (int) (.8660 * hexSize + y));
+                p.addPoint(x + (hexSize / 2) + hexSize, (int) (.8660 * 2 * hexSize + y));
+                p.addPoint(x + (hexSize / 2), (int) (.8660 * 2 * hexSize + y));
+                p.addPoint(x, y + (int) (.8660 * hexSize));
 
                 //Adjacent hex colorization
                 if (hexMap.adjacentHexes.contains(hexMap.hexArray[i][j])) {
@@ -202,8 +194,8 @@ public class HexMapRenderer {
 
                     int Xoffset, Yoffset, imageSize;
 
-                    Xoffset = (int) ((2 * hexagonSize) / 5.464);
-                    Yoffset = (int) (.66 * hexagonSize - (2 * hexagonSize) / 5.464);
+                    Xoffset = (int) ((2 * hexSize) / 5.464);
+                    Yoffset = (int) (.66 * hexSize - (2 * hexSize) / 5.464);
                     imageSize = (int) (2 * (1.732 * Xoffset));
 
                     g.drawImage(unitImage, x + Xoffset, y + Yoffset, imageSize, imageSize, null, null);
@@ -217,20 +209,20 @@ public class HexMapRenderer {
                 //Coordinates
                 if (showCoordinates) {
                     g.setColor(Color.GRAY);
-                    g.drawString("[" + hexMap.hexArray[i][j].getCol() + "," + hexMap.hexArray[i][j].getRow() + "]", (x + (int) (hexagonSize / 2)), y + (int) (hexagonSize / 2));
+                    g.drawString("[" + hexMap.hexArray[i][j].getCol() + "," + hexMap.hexArray[i][j].getRow() + "]", (x + (int) (hexSize / 2)), y + (int) (hexSize / 2));
                 }
 
                 //Move the pencil over
-                x = x + (hexagonSize / 2) + hexagonSize;
+                x = x + (hexSize / 2) + hexSize;
             }
 
-            beginDrawingFromY += (int) 2 * (.8660 * hexagonSize);
+            beginDrawingFromY += (int) 2 * (.8660 * hexSize);
 
             x = beginDrawingFromX;
-            y = y + (int) (2 * .8660 * hexagonSize);
+            y = y + (int) (2 * .8660 * hexSize);
 
             if ((i % 2) != 0) {
-                y = beginDrawingFromY + (int) (.8660 * hexagonSize);
+                y = beginDrawingFromY + (int) (.8660 * hexSize);
             } else {
                 y = beginDrawingFromY;
             }

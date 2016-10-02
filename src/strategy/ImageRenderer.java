@@ -15,9 +15,16 @@ public class ImageRenderer {
 
     protected int width, height;
     public BufferedImage image;
+    private boolean requiresUpdate = true;
 
     private int currentMasterPosX = 0, currentMasterPosY = 0;
     private int priorMouseX = 0, priorMouseY = 0;
+    private float zoomLevel = 0.2f;
+    private final float ZOOM_LEVEL_MIN = .10f;
+    private final float ZOOM_LEVEL_MAX = 1.0f;
+    private final float ZOOM_INCREMENT = 0.1f;
+    private int hexSize = 200;
+
 
     BufferedImage backgroundImage;
     List<Entity> entities;
@@ -39,7 +46,7 @@ public class ImageRenderer {
                 hexmap,
                 backgroundImage.getWidth(),
                 backgroundImage.getHeight(),
-                100);
+                hexSize);
 
         PointerInfo pInfo = MouseInfo.getPointerInfo();
 
@@ -48,6 +55,9 @@ public class ImageRenderer {
     }
 
     public BufferedImage update() {
+
+        if (requiresUpdate == false)
+            return image;
 
         PointerInfo pInfo = MouseInfo.getPointerInfo();
 
@@ -130,6 +140,23 @@ public class ImageRenderer {
         return image;
     }
 
+    public void zoomIn() {
+        if ((zoomLevel + ZOOM_INCREMENT) <= ZOOM_LEVEL_MAX) {
+            zoomLevel += ZOOM_INCREMENT;
+            System.out.println("zoom level : " + zoomLevel);
+            hexmaprenderer.setHexSize((int)(hexSize * zoomLevel));
+            //update();
+        }
+    }
+
+    public void zoomOut() {
+        if ((zoomLevel - ZOOM_INCREMENT) >= ZOOM_LEVEL_MIN) {
+            zoomLevel -= ZOOM_INCREMENT;
+            System.out.println("zoom level : " + zoomLevel);
+            hexmaprenderer.setHexSize((int)(hexSize * zoomLevel));
+            //update();
+        }
+    }
 
     private BufferedImage composite(final BufferedImage background, final BufferedImage foreground) {
         BufferedImage compositedImage = new BufferedImage(background.getWidth(), background.getHeight(), background.getType());
@@ -171,18 +198,13 @@ public class ImageRenderer {
         }
     }
 
-    public void keyPressed(KeyEvent e) {
-    }
+    public void keyPressed(KeyEvent e) {    }
 
-    public void keyReleased(KeyEvent e) {
-    }
+    public void keyReleased(KeyEvent e) {    }
 
-    public void keyTyped(KeyEvent e) {
-    }
+    public void keyTyped(KeyEvent e) {    }
 
-    public void mouseClicked (MouseEvent e) {
-        System.out.println("click");
-    }
+    public void mouseClicked (MouseEvent e) {   }
 
     public void mousePressed (MouseEvent e) {
 
@@ -200,19 +222,13 @@ public class ImageRenderer {
             else
                 hexmap.select(h);
 
-            hexmaprenderer.requiresUpdate = true;
+            hexmaprenderer.requestUpdate();
         }
     }
 
-    public void mouseReleased (MouseEvent e) {
+    public void mouseReleased (MouseEvent e) {    }
 
-    }
+    public void mouseEntered (MouseEvent e) {    }
 
-    public void mouseEntered (MouseEvent e) {
-
-    }
-
-    public void mouseExited (MouseEvent e) {
-
-    }
+    public void mouseExited (MouseEvent e) {    }
 }
