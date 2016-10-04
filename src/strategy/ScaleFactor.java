@@ -1,18 +1,13 @@
 package strategy;
 
-import com.sun.xml.internal.org.jvnet.mimepull.MIMEConfig;
-
-/**
- * Created by skot on 10/3/16.
- */
 public enum ScaleFactor {
     // level, hexSize, lineThickness
     MINIMUM     (0, 20, 1.0f),
-    ONE         (1, 40, 2.5f),
+    ONE         (1, 40, 2.0f),
     TWO         (2, 80, 3.0f),
-    THREE       (3, 100, 3.5f),
-    FOUR        (4, 120, 4.0f),
-    MAXIMUM     (5, 150, 6.0f);
+    THREE       (3, 100, 4.5f),
+    FOUR        (4, 120, 6.0f),
+    MAXIMUM     (5, 180, 8.0f);
 
     public int hexSize;
     public int sequence;

@@ -16,9 +16,11 @@ public class HexMapRenderer {
     private BufferedImage cachedImage;
 
     private int hexSize;
+    private float strokeThickness;
     private int width, height;
     private int beginDrawingFromX, beginDrawingFromY;
 
+    private boolean antialiasingOn = false;
     private boolean showCoordinates = false;
 
     private boolean requiresUpdate = true;
@@ -34,7 +36,8 @@ public class HexMapRenderer {
         this.width = width;
         this.height = height;
         this.currentScale = currentScale;
-        hexSize = currentScale.hexSize;
+        this.hexSize = currentScale.hexSize;
+        this.strokeThickness = currentScale.strokeThickness;
 
         beginDrawingFromX = (int)(0.25f * hexSize);
         beginDrawingFromY = (int)(0.25f * hexSize);
@@ -49,9 +52,10 @@ public class HexMapRenderer {
 
         cachedImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
         Graphics2D g = getCachedImage().createGraphics();
-        //g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.25f));
-        g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-        g.setStroke(new BasicStroke(currentScale.strokeThickness));
+        g.setStroke(new BasicStroke(strokeThickness));
+
+        if (antialiasingOn)
+            g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
         for (int i = 0; i < rows; i++) {
 
@@ -73,7 +77,8 @@ public class HexMapRenderer {
                 p.addPoint(x, y + (int) (.8660 * hexSize));
                 
                 g.setColor(hexOutlineColor);
-                //g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.25f));
+                if (antialiasingOn)
+                    g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
                 g.drawPolygon(p);
 
                 //associate a hex with this polygon
@@ -113,7 +118,8 @@ public class HexMapRenderer {
 
     public synchronized void setDrawingDimensions (ScaleFactor factor) {
         this.currentScale = factor;
-        hexSize = factor.hexSize;
+        this.strokeThickness = factor.strokeThickness;
+        this.hexSize = factor.hexSize;
         beginDrawingFromX = (int)(0.25f * hexSize);
         beginDrawingFromY = (int)(0.25f * hexSize);
         requiresUpdate = true;
@@ -124,13 +130,11 @@ public class HexMapRenderer {
         if (requiresUpdate == false)
             return cachedImage;
 
-        //System.out.println("RE-RENDERING...");
+        hexMap.polyList.clear();
 
         BufferedImage newImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
         Graphics2D g = newImage.createGraphics();
-        //g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.25f));
-        g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-        g.setStroke(new BasicStroke(currentScale.strokeThickness));
+        g.setStroke(new BasicStroke(strokeThickness));
 
         beginDrawingFromX = (int)(0.25f * hexSize);
         beginDrawingFromY = (int)(0.25f * hexSize);
@@ -161,6 +165,10 @@ public class HexMapRenderer {
                 p.addPoint(x + (hexSize / 2), (int) (.8660 * 2 * hexSize + y));
                 p.addPoint(x, y + (int) (.8660 * hexSize));
 
+                //associate a hex with this polygon
+                associatePolygonWithHex(i, j, p);
+                hexMap.polyList.add(p);
+
                 //Adjacent hex colorization
                 if (hexMap.adjacentHexes.contains(hexMap.hexArray[i][j])) {
                     g.setColor(Color.PINK);
@@ -173,14 +181,12 @@ public class HexMapRenderer {
                 //Paint RED on selected hexes
                 if (hexMap.hexArray[i][j].isSelected()) {
                     g.setColor(Color.RED);
-                    //g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.25f));
                     g.fillPolygon(p);
                 }
 
                 // paint magenta on highlighted hexes
                 if (hexMap.highlightedHexes.contains(hexMap.hexArray[i][j])) {
                     g.setColor(Color.MAGENTA);
-                    //g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.25f));
                     g.fillPolygon(p);
                 }
 
@@ -201,7 +207,6 @@ public class HexMapRenderer {
 
                 //Draw basic polygon 
                 g.setColor(hexOutlineColor);
-                //g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.25f));
                 g.drawPolygon(p);
 
                 //Coordinates

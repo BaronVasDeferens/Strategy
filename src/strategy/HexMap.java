@@ -40,12 +40,7 @@ public class HexMap implements Serializable
     LinkedList<Hex> adjacentHexes;
     LinkedList<Hex> highlightedHexes;
 
-    int beginDrawingFromX, beginDrawingFromY;
-
-
-    //Constructor
-    public HexMap(int rws, int cls)
-    {
+    public HexMap(int rws, int cls) {
         rows = rws;
         cols = cls;
 
@@ -94,24 +89,16 @@ public class HexMap implements Serializable
 
     }
 
-
-    //*** UNIT MANAGMENT ***
-    //Adds a unit to a hex.
-    public void addEntityToHex(Hex targetHex, Entity unit)
+    public void addEntityToHex (Hex targetHex, Entity unit)
     {
         targetHex.addOccupyingEntity(unit);
     }
 
-
-
-    public void select(Hex thisOne)
-    {
+    public void select (Hex thisOne) {
         selectedHexes.add(thisOne);
         thisOne.select();
     }
 
-    // Select Unoccupied Hex
-    // For temporarily highlighting a hex
     public void highlightHex(Hex thisOne) {
         if (thisOne != null) {
             highlightedHexes.add(thisOne);
@@ -127,11 +114,9 @@ public class HexMap implements Serializable
         thisOne.deselect();
     }
 
-
     public LinkedList<Hex> getAdjacentHexes (Hex thisHex) {
         return (getAdjacentHexes(thisHex.getRow(),thisHex.getCol()));
     }
-
 
     public LinkedList<Hex> getAdjacentHexes (Polygon thisOne) {
 

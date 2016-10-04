@@ -236,6 +236,9 @@ public class ImageRenderer {
 
             Hex h = hexmaprenderer.getHexFromPoly(p);
 
+            if (h == null)
+                return;
+
             if (h.isSelected())
                 hexmap.deselect(h);
             else
