@@ -14,29 +14,28 @@ import java.util.List;
 public class ImageRenderer {
 
     protected int width, height;
-    public BufferedImage image;
+    public BufferedImage cachedImage;
     private boolean requiresUpdate = true;
 
     private int currentMasterPosX = 0, currentMasterPosY = 0;
     private int priorMouseX = 0, priorMouseY = 0;
-    private float zoomLevel = 0.2f;
-    private final float ZOOM_LEVEL_MIN = .10f;
-    private final float ZOOM_LEVEL_MAX = 1.0f;
-    private final float ZOOM_INCREMENT = 0.1f;
-    private int hexSize = 200;
 
+    public ScaleFactor currentScale = ScaleFactor.ONE;
 
-    BufferedImage backgroundImage;
-    List<Entity> entities;
     HexMap hexmap;
     HexMapRenderer hexmaprenderer;
+
+    List<Entity> entities;
+
+    BufferedImage backgroundImageFullSize, backgroundImageScaled;
 
 
     public ImageRenderer(int width, int height) {
         this.width = width;
         this.height = height;
-        backgroundImage = loadImage("img02.jpg");
-        image = new BufferedImage(width, height, BufferedImage.OPAQUE);
+        backgroundImageFullSize = loadImage("img02.jpg");
+        cachedImage = new BufferedImage(width, height, BufferedImage.OPAQUE);
+        scaleBackgroundImage();
 
         entities = new ArrayList<Entity>();
         //entities.add(new Entity(loadImage("ship01.png"), image.getWidth() / 2, image.getHeight() / 2));
@@ -44,9 +43,9 @@ public class ImageRenderer {
         hexmap = new HexMap(22,32);
         hexmaprenderer = new HexMapRenderer(
                 hexmap,
-                backgroundImage.getWidth(),
-                backgroundImage.getHeight(),
-                hexSize);
+                backgroundImageFullSize.getWidth(),
+                backgroundImageFullSize.getHeight(),
+                currentScale);
 
         PointerInfo pInfo = MouseInfo.getPointerInfo();
 
@@ -57,7 +56,7 @@ public class ImageRenderer {
     public BufferedImage update() {
 
         if (requiresUpdate == false)
-            return image;
+            return cachedImage;
 
         PointerInfo pInfo = MouseInfo.getPointerInfo();
 
@@ -65,12 +64,11 @@ public class ImageRenderer {
         int y = pInfo.getLocation().y;
 
         // Scroll region : right
-        if (x >= image.getWidth() - 5) {
+        if (x >= cachedImage.getWidth() - 5) {
             currentMasterPosX = currentMasterPosX + Math.abs(priorMouseX - x);
 
-            if (currentMasterPosX >= backgroundImage.getWidth() - image.getWidth())
-                currentMasterPosX = backgroundImage.getWidth() - image.getWidth();
-
+            if (currentMasterPosX >= backgroundImageFullSize.getWidth() - cachedImage.getWidth())
+                currentMasterPosX = backgroundImageFullSize.getWidth() - cachedImage.getWidth();
         }
 
         // scroll region : left
@@ -97,14 +95,13 @@ public class ImageRenderer {
 
             if (currentMasterPosY <= 0)
                 currentMasterPosY = 0;
-
         }
         // Scroll region: down
-        else if (y >= image.getHeight() - 5) {
+        else if (y >= cachedImage.getHeight() - 5) {
             currentMasterPosY = currentMasterPosY + Math.abs(priorMouseY - y);
 
-            if (currentMasterPosY >= backgroundImage.getHeight() - image.getHeight())
-                currentMasterPosY = backgroundImage.getHeight() - image.getHeight();
+            if (currentMasterPosY >= backgroundImageFullSize.getHeight() - cachedImage.getHeight())
+                currentMasterPosY = backgroundImageFullSize.getHeight() - cachedImage.getHeight();
         } else if (y > priorMouseY) {
             //currentMasterPosY = currentMasterPosY + (y - priorMouseY);
             priorMouseY = pInfo.getLocation().y;
@@ -113,23 +110,21 @@ public class ImageRenderer {
             priorMouseY = pInfo.getLocation().y;
         }
 
-
-        if (currentMasterPosX > backgroundImage.getWidth())
-            currentMasterPosX = backgroundImage.getWidth() - image.getWidth();
+        if (currentMasterPosX > backgroundImageFullSize.getWidth())
+            currentMasterPosX = backgroundImageFullSize.getWidth() - cachedImage.getWidth();
         else if (currentMasterPosX <= 0)
             currentMasterPosX = 0;
 
-        if (currentMasterPosY > backgroundImage.getHeight())
-            currentMasterPosY = backgroundImage.getHeight() - image.getHeight();
+        if (currentMasterPosY > backgroundImageFullSize.getHeight())
+            currentMasterPosY = backgroundImageFullSize.getHeight() - cachedImage.getHeight();
         else if (currentMasterPosY <= 0)
             currentMasterPosY = 0;
 
-
         try {
-            image = backgroundImage.getSubimage(currentMasterPosX, currentMasterPosY, image.getWidth(), image.getHeight());
-            BufferedImage hexOverlay = hexmaprenderer.renderHexmap().getSubimage(currentMasterPosX, currentMasterPosY, image.getWidth(), image.getHeight());
-            image = composite(image, hexOverlay);
-            image = composite(image, entities);
+            cachedImage = backgroundImageFullSize.getSubimage(currentMasterPosX, currentMasterPosY, width, height);
+            BufferedImage hexOverlay = hexmaprenderer.renderHexmap().getSubimage(currentMasterPosX, currentMasterPosY, width, height);
+            cachedImage = composite(cachedImage, hexOverlay, 0.5f);
+            cachedImage = composite(cachedImage, entities);
 
         } catch (RasterFormatException e) {
             System.out.println(e.toString());
@@ -137,32 +132,55 @@ public class ImageRenderer {
             System.out.println("currentMasterPosY : " + currentMasterPosY);
         }
 
-        return image;
+        return cachedImage;
     }
 
     public void zoomIn() {
-        if ((zoomLevel + ZOOM_INCREMENT) <= ZOOM_LEVEL_MAX) {
-            zoomLevel += ZOOM_INCREMENT;
-            System.out.println("zoom level : " + zoomLevel);
-            hexmaprenderer.setHexSize((int)(hexSize * zoomLevel));
-            //update();
-        }
+        currentScale = currentScale.increase();
+        System.out.println(currentScale.sequence);
+        hexmaprenderer.setDrawingDimensions(currentScale);
+        scaleBackgroundImage();
+        update();
     }
 
     public void zoomOut() {
-        if ((zoomLevel - ZOOM_INCREMENT) >= ZOOM_LEVEL_MIN) {
-            zoomLevel -= ZOOM_INCREMENT;
-            System.out.println("zoom level : " + zoomLevel);
-            hexmaprenderer.setHexSize((int)(hexSize * zoomLevel));
-            //update();
-        }
+        currentScale = currentScale.decrease();
+        System.out.println(currentScale.sequence);
+        hexmaprenderer.setDrawingDimensions(currentScale);
+        scaleBackgroundImage();
+        update();
     }
 
-    private BufferedImage composite(final BufferedImage background, final BufferedImage foreground) {
+    private void scaleBackgroundImage() {
+
+//        int suggestedWidth = (int)(width * zoomLevel);
+//        int suggestedHeight = (int)(height * zoomLevel);
+//
+//        if (suggestedWidth < width)
+//            suggestedWidth = width;
+//        if (suggestedHeight < height)
+//            suggestedHeight = height;
+
+//
+//        Image temp = backgroundImageFullSize.getScaledInstance(suggestedWidth, suggestedHeight, BufferedImage.SCALE_SMOOTH);
+//        backgroundImageScaled = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+//        Graphics2D g2 = backgroundImageScaled.createGraphics();
+//        g2.drawImage(temp,0,0,width, height, null);
+//        g2.dispose();
+//
+//        currentMasterPosX = (int)(currentMasterPosX * zoomLevel);
+//        currentMasterPosY = (int)(currentMasterPosY * zoomLevel);
+//        priorMouseX = currentMasterPosX;
+//        priorMouseY = currentMasterPosY;
+//
+    }
+
+    private BufferedImage composite(final BufferedImage background, final BufferedImage foreground, float alpha) {
         BufferedImage compositedImage = new BufferedImage(background.getWidth(), background.getHeight(), background.getType());
         Graphics2D g = compositedImage.createGraphics();
         g.drawImage(background, 0, 0, null);
         g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+        g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, alpha));
         g.drawImage(foreground,0,0,background.getWidth(), background.getHeight(),null);
         g.dispose();
         return compositedImage;
@@ -191,6 +209,7 @@ public class ImageRenderer {
         try (InputStream fin = getClass().getResourceAsStream("images/" + imageName)) {
             loaded = ImageIO.read(fin);
             fin.close();
+            System.out.println("loaded " + imageName + ": " + loaded.getWidth() + "x" + loaded.getHeight());
             return loaded;
         } catch (Exception e) {
             System.out.println(e.toString());

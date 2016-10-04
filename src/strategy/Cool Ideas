@@ -3,12 +3,17 @@ drag and drop units
 unit animation
 
 
+FIXES
+re-associating resized polygons
+
 
 
 EASY STUFF
-+ zooming
++ hex zooming (DONE!)
++ background zooming
++ line-thickness based on zoom level
 + units
-+ better composite scheme
++ better composite scheme (DONE!)
 
 MEDIUM STUFF
 + 3D hexes

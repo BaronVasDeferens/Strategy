@@ -19,17 +19,22 @@ public class HexMapRenderer {
     private int width, height;
     private int beginDrawingFromX, beginDrawingFromY;
 
-    private boolean showCoordinates = true;
+    private boolean showCoordinates = false;
+
     private boolean requiresUpdate = true;
-    public Color hexOutlineColor = Color.WHITE;
+
+    public Color hexOutlineColor = Color.GRAY;
+    private ScaleFactor currentScale;
+
     Random rando;
 
-    public HexMapRenderer(HexMap hexMap, int width, int height, int hexSize) {
+    public HexMapRenderer(HexMap hexMap, int width, int height, ScaleFactor currentScale) {
 
         this.hexMap = hexMap;
         this.width = width;
         this.height = height;
-        this.hexSize = hexSize;
+        this.currentScale = currentScale;
+        hexSize = currentScale.hexSize;
 
         beginDrawingFromX = (int)(0.25f * hexSize);
         beginDrawingFromY = (int)(0.25f * hexSize);
@@ -44,9 +49,9 @@ public class HexMapRenderer {
 
         cachedImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
         Graphics2D g = getCachedImage().createGraphics();
-        g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.25f));
+        //g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.25f));
         g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-        g.setStroke(new BasicStroke(6.0f));
+        g.setStroke(new BasicStroke(currentScale.strokeThickness));
 
         for (int i = 0; i < rows; i++) {
 
@@ -68,7 +73,7 @@ public class HexMapRenderer {
                 p.addPoint(x, y + (int) (.8660 * hexSize));
                 
                 g.setColor(hexOutlineColor);
-                g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.25f));
+                //g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.25f));
                 g.drawPolygon(p);
 
                 //associate a hex with this polygon
@@ -105,22 +110,15 @@ public class HexMapRenderer {
     public void requestUpdate() {
         requiresUpdate = true;
     }
-    
 
-    //SET HEXAGON SIZE
-    public synchronized void setHexSize(int newSize) {
-        hexSize = newSize;
+    public synchronized void setDrawingDimensions (ScaleFactor factor) {
+        this.currentScale = factor;
+        hexSize = factor.hexSize;
         beginDrawingFromX = (int)(0.25f * hexSize);
         beginDrawingFromY = (int)(0.25f * hexSize);
         requiresUpdate = true;
-        //renderHexmap();
     }
 
-    public int getHexSize() {
-        return (hexSize);
-    }
-
-    
     public synchronized BufferedImage renderHexmap () {
 
         if (requiresUpdate == false)
@@ -130,9 +128,9 @@ public class HexMapRenderer {
 
         BufferedImage newImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
         Graphics2D g = newImage.createGraphics();
-        g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.25f));
+        //g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.25f));
         g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-        g.setStroke(new BasicStroke(6.0f));
+        g.setStroke(new BasicStroke(currentScale.strokeThickness));
 
         beginDrawingFromX = (int)(0.25f * hexSize);
         beginDrawingFromY = (int)(0.25f * hexSize);
@@ -175,14 +173,14 @@ public class HexMapRenderer {
                 //Paint RED on selected hexes
                 if (hexMap.hexArray[i][j].isSelected()) {
                     g.setColor(Color.RED);
-                    g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.25f));
+                    //g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.25f));
                     g.fillPolygon(p);
                 }
 
                 // paint magenta on highlighted hexes
                 if (hexMap.highlightedHexes.contains(hexMap.hexArray[i][j])) {
                     g.setColor(Color.MAGENTA);
-                    g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.25f));
+                    //g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.25f));
                     g.fillPolygon(p);
                 }
 
@@ -203,7 +201,7 @@ public class HexMapRenderer {
 
                 //Draw basic polygon 
                 g.setColor(hexOutlineColor);
-                g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.25f));
+                //g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.25f));
                 g.drawPolygon(p);
 
                 //Coordinates
