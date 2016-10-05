@@ -137,21 +137,35 @@ public class ImageRenderer {
 
     public void zoomIn() {
         currentScale = currentScale.increase();
-        System.out.println(currentScale.sequence);
         hexmaprenderer.setDrawingDimensions(currentScale);
         scaleBackgroundImage();
+        requiresUpdate = true;
         update();
     }
 
     public void zoomOut() {
         currentScale = currentScale.decrease();
-        System.out.println(currentScale.sequence);
         hexmaprenderer.setDrawingDimensions(currentScale);
         scaleBackgroundImage();
+        requiresUpdate = true;
         update();
     }
 
     private void scaleBackgroundImage() {
+
+        // Try to scale the background image
+        float scaleFactor = (1 + currentScale.sequence) / 6.0f;
+
+        int newWidth = (int)(backgroundImageFullSize.getWidth() * scaleFactor);
+        int newHeight = (int)(backgroundImageFullSize.getHeight() * scaleFactor);
+
+        if ( (newWidth >= width) && (newHeight >= height) ) {
+            BufferedImage scaled = new BufferedImage(newWidth, newHeight, BufferedImage.OPAQUE);
+            Graphics g = scaled.getGraphics();
+            g.drawImage(backgroundImageFullSize.getScaledInstance(newWidth, newHeight, BufferedImage.SCALE_FAST), 0, 0, null);
+            g.dispose();
+            backgroundImageScaled = scaled;
+        }
 
 //        int suggestedWidth = (int)(width * zoomLevel);
 //        int suggestedHeight = (int)(height * zoomLevel);
