@@ -20,7 +20,7 @@ public class ImageRenderer {
     private int currentMasterPosX = 0, currentMasterPosY = 0;
     private int priorMouseX = 0, priorMouseY = 0;
 
-    public ScaleFactor currentScale = ScaleFactor.ONE;
+    public ScaleFactor currentScale = ScaleFactor.MAXIMUM;
 
     HexMap hexmap;
     HexMapRenderer hexmaprenderer;
@@ -34,6 +34,7 @@ public class ImageRenderer {
         this.width = width;
         this.height = height;
         backgroundImageFullSize = loadImage("img02.jpg");
+        backgroundImageScaled = backgroundImageFullSize;
         cachedImage = new BufferedImage(width, height, BufferedImage.OPAQUE);
         scaleBackgroundImage();
 
@@ -67,8 +68,8 @@ public class ImageRenderer {
         if (x >= cachedImage.getWidth() - 5) {
             currentMasterPosX = currentMasterPosX + Math.abs(priorMouseX - x);
 
-            if (currentMasterPosX >= backgroundImageFullSize.getWidth() - cachedImage.getWidth())
-                currentMasterPosX = backgroundImageFullSize.getWidth() - cachedImage.getWidth();
+            if (currentMasterPosX >= backgroundImageScaled.getWidth() - cachedImage.getWidth())
+                currentMasterPosX = backgroundImageScaled.getWidth() - cachedImage.getWidth();
         }
 
         // scroll region : left
@@ -100,8 +101,8 @@ public class ImageRenderer {
         else if (y >= cachedImage.getHeight() - 5) {
             currentMasterPosY = currentMasterPosY + Math.abs(priorMouseY - y);
 
-            if (currentMasterPosY >= backgroundImageFullSize.getHeight() - cachedImage.getHeight())
-                currentMasterPosY = backgroundImageFullSize.getHeight() - cachedImage.getHeight();
+            if (currentMasterPosY >= backgroundImageScaled.getHeight() - cachedImage.getHeight())
+                currentMasterPosY = backgroundImageScaled.getHeight() - cachedImage.getHeight();
         } else if (y > priorMouseY) {
             //currentMasterPosY = currentMasterPosY + (y - priorMouseY);
             priorMouseY = pInfo.getLocation().y;
@@ -110,20 +111,20 @@ public class ImageRenderer {
             priorMouseY = pInfo.getLocation().y;
         }
 
-        if (currentMasterPosX > backgroundImageFullSize.getWidth())
-            currentMasterPosX = backgroundImageFullSize.getWidth() - cachedImage.getWidth();
+        if (currentMasterPosX > backgroundImageScaled.getWidth())
+            currentMasterPosX = backgroundImageScaled.getWidth() - cachedImage.getWidth();
         else if (currentMasterPosX <= 0)
             currentMasterPosX = 0;
 
-        if (currentMasterPosY > backgroundImageFullSize.getHeight())
-            currentMasterPosY = backgroundImageFullSize.getHeight() - cachedImage.getHeight();
+        if (currentMasterPosY > backgroundImageScaled.getHeight())
+            currentMasterPosY = backgroundImageScaled.getHeight() - cachedImage.getHeight();
         else if (currentMasterPosY <= 0)
             currentMasterPosY = 0;
 
         try {
-            cachedImage = backgroundImageFullSize.getSubimage(currentMasterPosX, currentMasterPosY, width, height);
+            cachedImage = backgroundImageScaled.getSubimage(currentMasterPosX, currentMasterPosY, width, height);
             BufferedImage hexOverlay = hexmaprenderer.renderHexmap().getSubimage(currentMasterPosX, currentMasterPosY, width, height);
-            cachedImage = composite(cachedImage, hexOverlay, 0.5f);
+            cachedImage = composite(cachedImage, hexOverlay, 0.65f);
             cachedImage = composite(cachedImage, entities);
 
         } catch (RasterFormatException e) {
@@ -136,19 +137,19 @@ public class ImageRenderer {
     }
 
     public void zoomIn() {
-        currentScale = currentScale.increase();
-        hexmaprenderer.setDrawingDimensions(currentScale);
-        scaleBackgroundImage();
-        requiresUpdate = true;
-        update();
+            currentScale = currentScale.increase();
+            hexmaprenderer.setDrawingDimensions(currentScale);
+            scaleBackgroundImage();
+            requiresUpdate = true;
+            update();
     }
 
     public void zoomOut() {
-        currentScale = currentScale.decrease();
-        hexmaprenderer.setDrawingDimensions(currentScale);
-        scaleBackgroundImage();
-        requiresUpdate = true;
-        update();
+            currentScale = currentScale.decrease();
+            hexmaprenderer.setDrawingDimensions(currentScale);
+            scaleBackgroundImage();
+            requiresUpdate = true;
+            update();
     }
 
     private void scaleBackgroundImage() {
@@ -160,11 +161,21 @@ public class ImageRenderer {
         int newHeight = (int)(backgroundImageFullSize.getHeight() * scaleFactor);
 
         if ( (newWidth >= width) && (newHeight >= height) ) {
+
+            System.out.println("scale: " + scaleFactor + ": " + newWidth + "x" + newHeight);
+
             BufferedImage scaled = new BufferedImage(newWidth, newHeight, BufferedImage.OPAQUE);
             Graphics g = scaled.getGraphics();
-            g.drawImage(backgroundImageFullSize.getScaledInstance(newWidth, newHeight, BufferedImage.SCALE_FAST), 0, 0, null);
+            //g.drawImage(backgroundImageFullSize.getScaledInstance(newWidth, newHeight, BufferedImage.SCALE_FAST), 0, 0, null);
+            g.drawImage(backgroundImageFullSize, 0, 0, newWidth,  newHeight, null);
+
             g.dispose();
+
+            currentMasterPosX = (int)(currentMasterPosX * scaleFactor);
+            currentMasterPosY = (int)(currentMasterPosY * scaleFactor);
+
             backgroundImageScaled = scaled;
+            requiresUpdate = true;
         }
 
 //        int suggestedWidth = (int)(width * zoomLevel);

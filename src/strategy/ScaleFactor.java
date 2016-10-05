@@ -7,7 +7,7 @@ public enum ScaleFactor {
     TWO         (2, 80, 3.0f),
     THREE       (3, 100, 4.5f),
     FOUR        (4, 120, 6.0f),
-    MAXIMUM     (5, 180, 8.0f);
+    MAXIMUM     (5, 200, 8.0f);
 
     public int hexSize;
     public int sequence;
