@@ -25,7 +25,7 @@ public class HexMapRenderer {
 
     private boolean requiresUpdate = true;
 
-    public Color hexOutlineColor = Color.GRAY;
+    public Color hexOutlineColor = Color.BLACK;
     private ScaleFactor currentScale;
 
     Random rando;

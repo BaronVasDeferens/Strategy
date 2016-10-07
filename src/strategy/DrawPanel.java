@@ -12,6 +12,7 @@ public class DrawPanel extends JPanel implements Runnable {
     BufferedImage image;
 
     int sleepInterval = 1;
+    boolean isAlive = true;
     boolean isPaused = false;
 
 
@@ -39,7 +40,7 @@ public class DrawPanel extends JPanel implements Runnable {
     @Override
     public void run() {
 
-        while (true) {
+        while (isAlive) {
 
             if (isPaused == false) {
                 image = renderer.update();
