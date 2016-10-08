@@ -20,20 +20,26 @@ public class ImageRenderer {
     private int currentMasterPosX = 0, currentMasterPosY = 0;
     private int priorMouseX = 0, priorMouseY = 0;
 
-    public ScaleFactor currentScale = ScaleFactor.MAXIMUM;
+    public ScaleFactor currentScale;
 
     HexMap hexmap;
     HexMapRenderer hexmaprenderer;
-
     List<Entity> entities;
 
     BufferedImage backgroundImageFullSize, backgroundImageScaled;
 
+    private boolean ready = false;
 
+
+    /**
+     *
+     * @param width : display's fullscreen width
+     * @param height  display's fullscreen height
+     */
     public ImageRenderer(int width, int height) {
         this.width = width;
         this.height = height;
-        backgroundImageFullSize = loadImage("img04.jpg");
+        backgroundImageFullSize = loadImage("img02.jpg");
         backgroundImageScaled = backgroundImageFullSize;
         cachedImage = new BufferedImage(width, height, BufferedImage.OPAQUE);
         scaleBackgroundImage();
@@ -42,6 +48,9 @@ public class ImageRenderer {
         //entities.add(new Entity(loadImage("ship01.png"), image.getWidth() / 2, image.getHeight() / 2));
 
         hexmap = new HexMap(25,26);
+
+        currentScale = new ScaleFactor(hexmap, width, height, backgroundImageFullSize.getWidth(), backgroundImageFullSize.getHeight());
+
         hexmaprenderer = new HexMapRenderer(
                 hexmap,
                 backgroundImageFullSize.getWidth(),
@@ -52,6 +61,8 @@ public class ImageRenderer {
 
         currentMasterPosX = pInfo.getLocation().x;
         currentMasterPosY = pInfo.getLocation().y;
+
+        ready = true;
     }
 
     public synchronized BufferedImage update() {
@@ -146,7 +157,7 @@ public class ImageRenderer {
     }
 
     public synchronized void zoomIn() {
-            currentScale = currentScale.increase();
+            currentScale.increase();
             hexmaprenderer.setDrawingDimensions(currentScale);
             if (scaleBackgroundImage()) {
                 requiresUpdate = true;
@@ -155,7 +166,7 @@ public class ImageRenderer {
     }
 
     public synchronized void zoomOut() {
-            currentScale = currentScale.decrease();
+            currentScale.decrease();
             hexmaprenderer.setDrawingDimensions(currentScale);
 
         if (scaleBackgroundImage()) {
@@ -166,41 +177,29 @@ public class ImageRenderer {
 
     private synchronized boolean scaleBackgroundImage() {
 
-        // Try to scale the background image
-        float scaleFactor = (1 + currentScale.sequence) / 6.0f;
-        System.out.println("scaleBkrndImg() scale: " + scaleFactor);
+        if (! ready)
+            return false;
 
-        int newWidth = (int)(backgroundImageFullSize.getWidth() * scaleFactor);
-        int newHeight = (int)(backgroundImageFullSize.getHeight() * scaleFactor);
 
-        if ( (newWidth >= width) && (newHeight >= height) ) {
+        // Believe it or not, this is WAY FASTER than getScaledInstance()!!!!
+        BufferedImage scaled = new BufferedImage(currentScale.getMapWidth(), currentScale.getMapHeight(), BufferedImage.OPAQUE);
+        Graphics g = scaled.getGraphics();
+        g.drawImage(backgroundImageFullSize, 0, 0, currentScale.getMapHeight(),  currentScale.getMapHeight(), null);
 
-            System.out.println("scale: " + scaleFactor + ": " + newWidth + "x" + newHeight);
+        g.dispose();
 
-            // Believe it or not, this is WAY FASTER than getScaledInstance()!!!!
-            BufferedImage scaled = new BufferedImage(newWidth, newHeight, BufferedImage.OPAQUE);
-            Graphics g = scaled.getGraphics();
-            g.drawImage(backgroundImageFullSize, 0, 0, newWidth,  newHeight, null);
+        currentMasterPosX = (int)(currentMasterPosX * currentScale.getScaleFactor());
+        currentMasterPosY = (int)(currentMasterPosY * currentScale.getScaleFactor());
 
-            g.dispose();
+        // Prevent raster exception
+        if (currentMasterPosX + width > scaled.getWidth())
+            currentMasterPosX = 0;
+        if (currentMasterPosY + height > scaled.getHeight())
+            currentMasterPosY = 0;
 
-            currentMasterPosX = (int)(currentMasterPosX * scaleFactor);
-            currentMasterPosY = (int)(currentMasterPosY * scaleFactor);
-
-            // Prevent raster exception
-            if (currentMasterPosX + width > scaled.getWidth())
-                currentMasterPosX = 0;
-            if (currentMasterPosY + height > scaled.getHeight())
-                currentMasterPosY = 0;
-
-            backgroundImageScaled = scaled;
-            requiresUpdate = true;
-            return true;
-        }
-        else
-            System.out.println("NO SCALE-O!");
-
-        return false;
+        backgroundImageScaled = scaled;
+        requiresUpdate = true;
+        return true;
 
     }
 

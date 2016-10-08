@@ -36,8 +36,8 @@ public class HexMapRenderer {
         this.width = width;
         this.height = height;
         this.currentScale = currentScale;
-        this.hexSize = currentScale.hexSize;
-        this.strokeThickness = currentScale.strokeThickness;
+        this.hexSize = currentScale.getHexSize();
+        this.strokeThickness = currentScale.getStrokeThickness();
 
         beginDrawingFromX = (int)(0.25f * hexSize);
         beginDrawingFromY = (int)(0.25f * hexSize);
@@ -118,8 +118,8 @@ public class HexMapRenderer {
 
     public synchronized void setDrawingDimensions (ScaleFactor factor) {
         this.currentScale = factor;
-        this.strokeThickness = factor.strokeThickness;
-        this.hexSize = factor.hexSize;
+        this.strokeThickness = factor.getStrokeThickness();
+        this.hexSize = factor.getHexSize();
         beginDrawingFromX = (int)(0.25f * hexSize);
         beginDrawingFromY = (int)(0.25f * hexSize);
         requiresUpdate = true;
@@ -134,7 +134,7 @@ public class HexMapRenderer {
 
         BufferedImage newImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
         Graphics2D g = newImage.createGraphics();
-        g.setStroke(new BasicStroke(strokeThickness));
+        g.setStroke(new BasicStroke(currentScale.getStrokeThickness()));
 
         beginDrawingFromX = (int)(0.25f * hexSize);
         beginDrawingFromY = (int)(0.25f * hexSize);
