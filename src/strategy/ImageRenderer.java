@@ -180,11 +180,12 @@ public class ImageRenderer {
         if (! ready)
             return false;
 
+        System.out.println("scaleBackgroundImage: " + currentScale.getMapWidth() + "x" + currentScale.getMapHeight());
 
-        // Believe it or not, this is WAY FASTER than getScaledInstance()!!!!
         BufferedImage scaled = new BufferedImage(currentScale.getMapWidth(), currentScale.getMapHeight(), BufferedImage.OPAQUE);
         Graphics g = scaled.getGraphics();
-        g.drawImage(backgroundImageFullSize, 0, 0, currentScale.getMapHeight(),  currentScale.getMapHeight(), null);
+        // Believe it or not, this is WAY FASTER than getScaledInstance()!!!!
+        g.drawImage(backgroundImageFullSize, 0, 0, currentScale.getMapWidth(),  currentScale.getMapHeight(), null);
 
         g.dispose();
 
