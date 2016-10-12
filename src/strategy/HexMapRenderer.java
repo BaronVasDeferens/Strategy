@@ -39,8 +39,8 @@ public class HexMapRenderer {
         this.hexSize = currentScale.getHexSize();
         this.strokeThickness = currentScale.getStrokeThickness();
 
-        beginDrawingFromX = (int)(0.25f * hexSize);
-        beginDrawingFromY = (int)(0.25f * hexSize);
+        beginDrawingFromX = (int)(1.0 * hexSize);
+        beginDrawingFromY = (int)(1.0 * hexSize);
 
         rando = new Random();
 
@@ -120,8 +120,8 @@ public class HexMapRenderer {
         this.currentScale = factor;
         this.strokeThickness = factor.getStrokeThickness();
         this.hexSize = factor.getHexSize();
-        beginDrawingFromX = (int)(0.25f * hexSize);
-        beginDrawingFromY = (int)(0.25f * hexSize);
+        beginDrawingFromX = (int)(1.0 * hexSize);
+        beginDrawingFromY = (int)(1.0 * hexSize);
         requiresUpdate = true;
     }
 
@@ -136,8 +136,8 @@ public class HexMapRenderer {
         Graphics2D g = newImage.createGraphics();
         g.setStroke(new BasicStroke(currentScale.getStrokeThickness()));
 
-        beginDrawingFromX = (int)(0.25f * hexSize);
-        beginDrawingFromY = (int)(0.25f * hexSize);
+        beginDrawingFromX = (int)(1.0 * hexSize);
+        beginDrawingFromY = (int)(1.0 * hexSize);
 
         int x = beginDrawingFromX;
         int y = beginDrawingFromY;

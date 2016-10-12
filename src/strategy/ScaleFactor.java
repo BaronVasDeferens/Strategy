@@ -7,7 +7,7 @@ class ScaleFactor {
     private static float strokeThickness;
 
     private static int currentSequence = 5;
-    private static final int MAX_HEX_SIZE = 100;
+    private static final int MAX_HEX_SIZE = 0;
     private static final float MAX_STROKE = 10.0f;
 
     private static final int MAX_SEQ = 5;
@@ -49,7 +49,7 @@ class ScaleFactor {
         ScaleFactor.currentSequence++;
         ScaleFactor.strokeThickness += 1.25f;
         ScaleFactor.scaleFactor = (currentSequence * 1.0f) / MAX_SEQ * 1.0f;
-        ScaleFactor.hexSize = (int)(60 * scaleFactor); //;((4 * getMapWidth()) / 7 * cols);
+        ScaleFactor.hexSize = 4 * getMapWidth() / (7 * cols);
         prnt();
     }
 
@@ -64,7 +64,7 @@ class ScaleFactor {
         ScaleFactor.currentSequence--;
         ScaleFactor.strokeThickness -= 1.25f;
         ScaleFactor.scaleFactor = (currentSequence * 1.0f) / MAX_SEQ * 1.0f;
-        ScaleFactor.hexSize = (int)(60 * scaleFactor); //((4 * getMapWidth()) / 7 * cols);
+        ScaleFactor.hexSize = 4 * getMapWidth() / (7 * cols);
         prnt();
     }
 
@@ -76,7 +76,7 @@ class ScaleFactor {
         if ((mapHeight >= maxMapHeight) || (mapWidth >= maxMapWidth))
             return maxMapWidth;
         else if ((mapHeight <= screenMinHeight) || (mapWidth <= screenMinWidth))
-            return screenMinWidth;
+            return mapWidth + (int) (((Math.abs(screenMinWidth - mapWidth) / 1.0f)));
         else
             return mapWidth;
     }
@@ -88,7 +88,7 @@ class ScaleFactor {
         if ((mapHeight >= maxMapHeight) || (mapWidth >= maxMapWidth))
             return maxMapHeight;
         else if ((mapHeight <= screenMinHeight) || (mapWidth <= screenMinWidth))
-            return screenMinHeight;
+            return mapHeight + (int) (((Math.abs(screenMinHeight - mapHeight)) / 1.0f));
         else
             return mapHeight;
     }
@@ -97,7 +97,7 @@ class ScaleFactor {
 
 
     public int getHexSize() {
-        ScaleFactor.hexSize = (int)(MAX_HEX_SIZE * scaleFactor);
+        ScaleFactor.hexSize = 4 * getMapWidth() / (7 * cols);
         return hexSize;
     }
 
