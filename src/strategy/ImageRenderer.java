@@ -45,9 +45,9 @@ public class ImageRenderer {
         scaleBackgroundImage();
 
         entities = new ArrayList<Entity>();
-        //entities.add(new Entity(loadImage("ship01.png"), image.getWidth() / 2, image.getHeight() / 2));
+        //entities.add(new Entity(loadImage("ship01.png"));
 
-        hexmap = new HexMap(25,26);
+        hexmap = new HexMap(20,28);
 
         currentScale = new ScaleFactor(hexmap, width, height, backgroundImageFullSize.getWidth(), backgroundImageFullSize.getHeight());
 

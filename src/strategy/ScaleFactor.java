@@ -76,7 +76,8 @@ class ScaleFactor {
         if ((mapHeight >= maxMapHeight) || (mapWidth >= maxMapWidth))
             return maxMapWidth;
         else if ((mapHeight <= screenMinHeight) || (mapWidth <= screenMinWidth))
-            return mapWidth + (int) (((Math.abs(screenMinWidth - mapWidth) / 1.0f)));
+            return computeSmallestWidth();
+            //return mapWidth + (int) (((Math.abs(screenMinWidth - mapWidth) / 1.0f)));
         else
             return mapWidth;
     }
@@ -88,12 +89,47 @@ class ScaleFactor {
         if ((mapHeight >= maxMapHeight) || (mapWidth >= maxMapWidth))
             return maxMapHeight;
         else if ((mapHeight <= screenMinHeight) || (mapWidth <= screenMinWidth))
-            return mapHeight + (int) (((Math.abs(screenMinHeight - mapHeight)) / 1.0f));
+            return computeSmallestHeight();
+            //return mapHeight + (int) (((Math.abs(screenMinHeight - mapHeight)) / 1.0f));
         else
             return mapHeight;
     }
 
+    public int computeSmallestWidth() {
 
+
+        int widthDifference = Math.abs(maxMapWidth - screenMinWidth);
+        int heightDifference = Math.abs(maxMapHeight - screenMinHeight);
+
+        float ratio;
+
+        if (widthDifference > heightDifference) {
+            ratio = 1.0f * screenMinWidth / maxMapWidth;
+        }
+        else {
+            ratio = 1.0f * screenMinHeight / maxMapHeight;
+        }
+
+        return (int)(ratio * maxMapWidth);
+
+    }
+
+    public int computeSmallestHeight() {
+
+        float ratio;
+
+        int widthDifference = Math.abs(maxMapWidth - screenMinWidth);
+        int heightDifference = Math.abs(maxMapHeight - screenMinHeight);
+
+        if (widthDifference < heightDifference) {
+            ratio =1.0f *  screenMinHeight/ maxMapHeight;
+        }
+        else {
+            ratio = 1.0f * screenMinWidth / maxMapWidth;
+        }
+            return (int)(maxMapHeight * ratio);
+
+    }
 
 
     public int getHexSize() {

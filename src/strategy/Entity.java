@@ -20,4 +20,9 @@ public class Entity {
         this.y = y;
     }
 
+    public Entity (BufferedImage image, Hex hex){
+        this.image = image;
+        this.hex = hex;
+    }
+
 }
