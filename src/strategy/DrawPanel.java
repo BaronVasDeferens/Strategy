@@ -8,7 +8,7 @@ public class DrawPanel extends JPanel implements Runnable {
 
     Thread t;
 
-    ImageRenderer renderer;
+    ImageManager renderer;
     BufferedImage image;
 
     int sleepInterval = 1;
@@ -16,7 +16,7 @@ public class DrawPanel extends JPanel implements Runnable {
     boolean isPaused = false;
 
 
-    public DrawPanel(ImageRenderer renderer) {
+    public DrawPanel(ImageManager renderer) {
         super();
         this.renderer = renderer;
         t = new Thread(this);

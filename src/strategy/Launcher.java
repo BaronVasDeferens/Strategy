@@ -10,7 +10,7 @@ public class Launcher {
     static int sleepInterval = 1;
     public boolean isPaused = false;
 
-    ImageRenderer renderer;
+    ImageManager renderer;
     GameFrame gameFrame;
     DrawPanel drawPanel;
 
@@ -28,7 +28,7 @@ public class Launcher {
             System.out.println(e.toString());
         }
 
-        renderer = new ImageRenderer(fullScreenWidth, fullScreenHeight);
+        renderer = new ImageManager(fullScreenWidth, fullScreenHeight);
         drawPanel = new DrawPanel(renderer);
         drawPanel.setSize(fullScreenWidth, fullScreenHeight);
         drawPanel.setDoubleBuffered(true);

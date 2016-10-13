@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-public class ImageRenderer {
+public class ImageManager {
 
     protected int width, height;
     public BufferedImage cachedImage;
@@ -36,7 +36,7 @@ public class ImageRenderer {
      * @param width : display's fullscreen width
      * @param height  display's fullscreen height
      */
-    public ImageRenderer(int width, int height) {
+    public ImageManager(int width, int height) {
         this.width = width;
         this.height = height;
         backgroundImageFullSize = loadImage("img02.jpg");
@@ -58,7 +58,6 @@ public class ImageRenderer {
                 currentScale);
 
         PointerInfo pInfo = MouseInfo.getPointerInfo();
-
         currentMasterPosX = pInfo.getLocation().x;
         currentMasterPosY = pInfo.getLocation().y;
 

@@ -130,6 +130,8 @@ public class HexMapRenderer {
         if (requiresUpdate == false)
             return cachedImage;
 
+        boolean requireUpdateAnyway = false;
+        
         hexMap.polyList.clear();
 
         BufferedImage newImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
@@ -181,6 +183,11 @@ public class HexMapRenderer {
                 //Paint RED on selected hexes
                 if (hexMap.hexArray[i][j].isSelected()) {
                     g.setColor(Color.RED);
+//                    int alpha = hexMap.hexArray[i][j].updateAndReturnAlpha();
+//                    if (alpha > 0)
+//                        requireUpdateAnyway = true;
+//                    Color n = new Color(254,0,0, alpha);
+//                    g.setColor(n);
                     g.fillPolygon(p);
                 }
 
@@ -234,7 +241,7 @@ public class HexMapRenderer {
 
         g.dispose();
         cachedImage = newImage;
-        requiresUpdate = false;
+        requiresUpdate = requireUpdateAnyway;
         return cachedImage;
     }
 
@@ -243,6 +250,7 @@ public class HexMapRenderer {
         hexMap.hexArray[rw][cl].setPolygon(poly);
     }
 
+    // TODO: this is shockingly inefficient. boo. do better.
     public Polygon getPolygon(int pointX, int pointY) {
         //bounds checking
         Iterator polys = hexMap.polyList.iterator();

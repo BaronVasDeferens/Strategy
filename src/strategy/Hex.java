@@ -16,17 +16,16 @@ public class Hex implements Serializable
 
     private int row, col;
     private Polygon myPoly;
-    private ArrayList<Entity> occupyingEntitys;
+    private ArrayList<Entity> occupyingEntities;
     private boolean [] openFaces;
     private boolean isSelected;
-
 
     public Hex(int rws, int cls)
     {
         row = rws;
         col = cls;
 
-        occupyingEntitys = new ArrayList<Entity>();
+        occupyingEntities = new ArrayList<Entity>();
         myPoly = null;
         openFaces = new boolean[6];
         for (int i = 0; i < 6; i++) {
@@ -50,7 +49,6 @@ public class Hex implements Serializable
         }
 
     }
-
 
     public void rotateClockWise () {
 
@@ -81,28 +79,27 @@ public class Hex implements Serializable
         openFaces = newOrientation;
     }
 
-
     public void setPolygon(Polygon poly) { myPoly = poly; }
 
     public Polygon getPolygon() { return myPoly; }
 
     public void addOccupyingEntity (Entity unit) {
-        occupyingEntitys.add(unit);
+        occupyingEntities.add(unit);
     }
 
     public void removeOccupyingEntity (Entity unit) {
-        occupyingEntitys.remove(unit);
+        occupyingEntities.remove(unit);
     }
 
     public boolean isOccupied() {
-        if ((occupyingEntitys == null) || (occupyingEntitys.isEmpty()))
+        if ((occupyingEntities == null) || (occupyingEntities.isEmpty()))
             return (false);
         else
             return (true);
     }
 
     public ArrayList<Entity> getOccupyingEntities() {
-        return occupyingEntitys;
+        return occupyingEntities;
     }
 
 
