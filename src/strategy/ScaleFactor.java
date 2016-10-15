@@ -133,7 +133,7 @@ class ScaleFactor {
 
 
     public int getHexSize() {
-        ScaleFactor.hexSize = 4 * getMapWidth() / (7 * cols);
+        ScaleFactor.hexSize = (int)(4 * getMapWidth() / (cols * 6.5f));  //(7 * cols);
         return hexSize;
     }
 

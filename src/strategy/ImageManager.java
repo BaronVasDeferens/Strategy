@@ -47,7 +47,7 @@ public class ImageManager {
         entities = new ArrayList<Entity>();
         //entities.add(new Entity(loadImage("ship01.png"));
 
-        hexmap = new HexMap(20,28);
+        hexmap = new HexMap(14,20);
 
         currentScale = new ScaleFactor(hexmap, width, height, backgroundImageFullSize.getWidth(), backgroundImageFullSize.getHeight());
 

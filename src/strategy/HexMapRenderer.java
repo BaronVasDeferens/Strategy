@@ -20,6 +20,7 @@ public class HexMapRenderer {
     private int width, height;
     private int beginDrawingFromX, beginDrawingFromY;
 
+
     private boolean antialiasingOn = false;
     private boolean showCoordinates = false;
 
@@ -39,14 +40,14 @@ public class HexMapRenderer {
         this.hexSize = currentScale.getHexSize();
         this.strokeThickness = currentScale.getStrokeThickness();
 
-        beginDrawingFromX = (int)(1.0 * hexSize);
-        beginDrawingFromY = (int)(1.0 * hexSize);
+        beginDrawingFromX = (int)(0.5 * hexSize);
+        beginDrawingFromY = (int)(0.5 * hexSize);
 
         rando = new Random();
 
         int rows = hexMap.rows;
         int cols = hexMap.cols;
-        
+
         int x = beginDrawingFromX;
         int y = beginDrawingFromY;
 
@@ -120,8 +121,8 @@ public class HexMapRenderer {
         this.currentScale = factor;
         this.strokeThickness = factor.getStrokeThickness();
         this.hexSize = factor.getHexSize();
-        beginDrawingFromX = (int)(1.0 * hexSize);
-        beginDrawingFromY = (int)(1.0 * hexSize);
+        beginDrawingFromX = (int)(0.5 * hexSize);
+        beginDrawingFromY = (int)(0.5 * hexSize);
         requiresUpdate = true;
     }
 
@@ -138,8 +139,8 @@ public class HexMapRenderer {
         Graphics2D g = newImage.createGraphics();
         g.setStroke(new BasicStroke(currentScale.getStrokeThickness()));
 
-        beginDrawingFromX = (int)(1.0 * hexSize);
-        beginDrawingFromY = (int)(1.0 * hexSize);
+        beginDrawingFromX = (int)(0.5 * hexSize);
+        beginDrawingFromY = (int)(0.5 * hexSize);
 
         int x = beginDrawingFromX;
         int y = beginDrawingFromY;
@@ -182,12 +183,8 @@ public class HexMapRenderer {
 
                 //Paint RED on selected hexes
                 if (hexMap.hexArray[i][j].isSelected()) {
+
                     g.setColor(Color.RED);
-//                    int alpha = hexMap.hexArray[i][j].updateAndReturnAlpha();
-//                    if (alpha > 0)
-//                        requireUpdateAnyway = true;
-//                    Color n = new Color(254,0,0, alpha);
-//                    g.setColor(n);
                     g.fillPolygon(p);
                 }
 
@@ -251,6 +248,7 @@ public class HexMapRenderer {
     }
 
     // TODO: this is shockingly inefficient. boo. do better.
+    // TODO: also, as a by-product, i look 'tupid to anyone who sees this
     public Polygon getPolygon(int pointX, int pointY) {
         //bounds checking
         Iterator polys = hexMap.polyList.iterator();
@@ -266,6 +264,7 @@ public class HexMapRenderer {
 
         return null;
     }
+
 
     public Hex getHexFromPoly(Polygon thisOne) {
         Iterator hexes = hexMap.hexList.iterator();
