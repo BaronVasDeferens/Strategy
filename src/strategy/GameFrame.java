@@ -55,8 +55,7 @@ public class GameFrame extends JFrame implements KeyListener, MouseListener, Mou
 
         switch (e.getKeyCode()) {
             case KeyEvent.VK_ESCAPE:
-                launcher.drawPanel.isAlive = false;
-                System.exit(0);
+                launcher.quit();
                 break;
             case KeyEvent.VK_SPACE:
                 launcher.isPaused = !launcher.isPaused;

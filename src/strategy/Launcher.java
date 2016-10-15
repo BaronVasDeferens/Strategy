@@ -10,11 +10,13 @@ public class Launcher {
     static int sleepInterval = 1;
     public boolean isPaused = false;
 
-    ImageManager renderer;
+    Renderer renderer;
     GameFrame gameFrame;
     DrawPanel drawPanel;
 
     static int fullScreenWidth, fullScreenHeight;
+
+    static long lastMouseWheelEvent;
 
     public Launcher() {
 
@@ -28,7 +30,7 @@ public class Launcher {
             System.out.println(e.toString());
         }
 
-        renderer = new ImageManager(fullScreenWidth, fullScreenHeight);
+        renderer = new Renderer(fullScreenWidth, fullScreenHeight);
         drawPanel = new DrawPanel(renderer);
         drawPanel.setSize(fullScreenWidth, fullScreenHeight);
         drawPanel.setDoubleBuffered(true);
@@ -37,6 +39,12 @@ public class Launcher {
         gameFrame.requestFocus();
         gameFrame.setVisible(true);
 
+    }
+
+    public void quit() {
+        renderer.quit();
+        drawPanel.quit();
+        System.exit(0);
     }
 
 
@@ -85,15 +93,21 @@ public class Launcher {
 
     }
 
-    public void mouseWheelMoved(MouseWheelEvent e) {
+    public void mouseWheelMoved (MouseWheelEvent e) {
+
+        // TODO: think about this:
+        // When the mouse wheel moves a lot, we don't want to render ALL levels between the current level
+        // and the desired one.
+
+        int scrollAmount = Math.abs(e.getScrollAmount());
+
         // wheel DOWN : zoom in
         if (e.getWheelRotation() > 0) {
-            renderer.zoomIn();
-
+            renderer.zoomIn(1);
         }
         else {
             // wheel UP : zoom out
-            renderer.zoomOut();
+            renderer.zoomOut(1);
         }
 
     }

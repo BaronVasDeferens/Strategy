@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-public class ImageManager {
+public class Renderer implements Runnable {
 
     protected int width, height;
     public BufferedImage cachedImage;
@@ -30,13 +30,15 @@ public class ImageManager {
 
     private boolean ready = false;
 
+    private boolean isAlive = true;
+
 
     /**
      *
      * @param width : display's fullscreen width
      * @param height  display's fullscreen height
      */
-    public ImageManager(int width, int height) {
+    public Renderer(int width, int height) {
         this.width = width;
         this.height = height;
         backgroundImageFullSize = loadImage("img02.jpg");
@@ -62,6 +64,19 @@ public class ImageManager {
         currentMasterPosY = pInfo.getLocation().y;
 
         ready = true;
+    }
+
+    public void run() {
+        while (isAlive) {
+            if (requiresUpdate == true) {
+                cachedImage = update();
+                requiresUpdate = false;
+            }
+        }
+    }
+
+    public void quit() {
+        isAlive = false;
     }
 
     public synchronized BufferedImage update() {
@@ -155,22 +170,23 @@ public class ImageManager {
         return cachedImage;
     }
 
-    public synchronized void zoomIn() {
-            currentScale.increase();
+    public synchronized void zoomIn(int levels) {
+        if (currentScale.increase(levels) ) {
             hexmaprenderer.setDrawingDimensions(currentScale);
             if (scaleBackgroundImage()) {
                 requiresUpdate = true;
                 update();
             }
+        }
     }
 
-    public synchronized void zoomOut() {
-            currentScale.decrease();
+    public synchronized void zoomOut(int levels) {
+        if (currentScale.decrease(levels)) {
             hexmaprenderer.setDrawingDimensions(currentScale);
-
-        if (scaleBackgroundImage()) {
-            requiresUpdate = true;
-            update();
+            if (scaleBackgroundImage()) {
+                requiresUpdate = true;
+                update();
+            }
         }
     }
 

@@ -8,7 +8,7 @@ public class DrawPanel extends JPanel implements Runnable {
 
     Thread t;
 
-    ImageManager renderer;
+    Renderer renderer;
     BufferedImage image;
 
     int sleepInterval = 1;
@@ -16,7 +16,7 @@ public class DrawPanel extends JPanel implements Runnable {
     boolean isPaused = false;
 
 
-    public DrawPanel(ImageManager renderer) {
+    public DrawPanel(Renderer renderer) {
         super();
         this.renderer = renderer;
         t = new Thread(this);
@@ -28,13 +28,15 @@ public class DrawPanel extends JPanel implements Runnable {
     }
 
     @Override
-    public void paintComponent(Graphics g) {
+    public synchronized void paintComponent(Graphics g) {
         g.setColor(Color.BLACK);
         g.fillRect(0, 0, this.getWidth(), this.getHeight());
 
         if (image != null) {
             g.drawImage(image, 0, 0, this);
         }
+
+        g.dispose();
     }
 
     @Override
@@ -55,6 +57,11 @@ public class DrawPanel extends JPanel implements Runnable {
 
         }
 
+        System.out.println("drawPanel quit normally");
+    }
+
+    public synchronized void quit() {
+        isAlive = false;
     }
 
 }

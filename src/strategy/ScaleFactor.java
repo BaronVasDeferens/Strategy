@@ -37,35 +37,38 @@ class ScaleFactor {
     }
 
 
-    public void increase() {
+    public boolean increase(int levels) {
 
-        if ((currentSequence+1) > MAX_SEQ) {
+        if ((currentSequence + levels) > MAX_SEQ) {
             System.out.println("NO INCREASE : " + currentSequence + "/" + MAX_SEQ);
-            return;
+            return false;
         }
 
-
         System.out.println("inc");
-        ScaleFactor.currentSequence++;
-        ScaleFactor.strokeThickness += 1.25f;
+        ScaleFactor.currentSequence+= levels;
+        ScaleFactor.strokeThickness += (1.25f * levels);
         ScaleFactor.scaleFactor = (currentSequence * 1.0f) / MAX_SEQ * 1.0f;
         ScaleFactor.hexSize = 4 * getMapWidth() / (7 * cols);
         prnt();
+
+        return true;
     }
 
-    public void decrease() {
-        if ((currentSequence-1) < MIN_SEQ) {
+    public boolean decrease(int levels) {
+        if ((currentSequence - levels) < MIN_SEQ) {
             System.out.println("NO DECREASE : " + currentSequence + "/" + MAX_SEQ);
-            return;
+            return false;
         }
 
 
         System.out.println("dec");
-        ScaleFactor.currentSequence--;
-        ScaleFactor.strokeThickness -= 1.25f;
+        ScaleFactor.currentSequence -= levels;
+        ScaleFactor.strokeThickness -= (1.25f * levels);
         ScaleFactor.scaleFactor = (currentSequence * 1.0f) / MAX_SEQ * 1.0f;
         ScaleFactor.hexSize = 4 * getMapWidth() / (7 * cols);
         prnt();
+
+        return true;
     }
 
     public int getMapWidth() {
