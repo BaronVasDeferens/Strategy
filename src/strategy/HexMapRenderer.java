@@ -20,7 +20,6 @@ public class HexMapRenderer {
     private int width, height;
     private int beginDrawingFromX, beginDrawingFromY;
 
-
     private boolean antialiasingOn = false;
     private boolean showCoordinates = false;
 
@@ -113,6 +112,11 @@ public class HexMapRenderer {
         
     }
 
+    private void setDrawingOrigin() {
+        beginDrawingFromX = (int)(1.5 * hexSize);
+        beginDrawingFromY = (int)(0.8660 * hexSize);
+    }
+
     public void requestUpdate() {
         requiresUpdate = true;
     }
@@ -121,8 +125,7 @@ public class HexMapRenderer {
         this.currentScale = factor;
         this.strokeThickness = factor.getStrokeThickness();
         this.hexSize = factor.getHexSize();
-        beginDrawingFromX = (int)(0.5 * hexSize);
-        beginDrawingFromY = (int)(0.5 * hexSize);
+        setDrawingOrigin();
         requiresUpdate = true;
     }
 
@@ -139,8 +142,7 @@ public class HexMapRenderer {
         Graphics2D g = newImage.createGraphics();
         g.setStroke(new BasicStroke(currentScale.getStrokeThickness()));
 
-        beginDrawingFromX = (int)(0.5 * hexSize);
-        beginDrawingFromY = (int)(0.5 * hexSize);
+        setDrawingOrigin();
 
         int x = beginDrawingFromX;
         int y = beginDrawingFromY;
