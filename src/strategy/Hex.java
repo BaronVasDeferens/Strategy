@@ -92,10 +92,7 @@ public class Hex implements Serializable
     }
 
     public boolean isOccupied() {
-        if ((occupyingEntities == null) || (occupyingEntities.isEmpty()))
-            return (false);
-        else
-            return (true);
+        return !((occupyingEntities == null) || (occupyingEntities.isEmpty()));
     }
 
     public ArrayList<Entity> getOccupyingEntities() {

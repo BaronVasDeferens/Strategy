@@ -88,7 +88,7 @@ public class HexMapRenderer {
                 //Coordinates
                 if (showCoordinates) {
                     g.setColor(Color.GRAY);
-                    g.drawString("[" + hexMap.hexArray[i][j].getCol() + "," + hexMap.hexArray[i][j].getRow() + "]", (x + (int) (hexSize / 2)), y + (int) (hexSize / 2));
+                    g.drawString("[" + hexMap.hexArray[i][j].getCol() + "," + hexMap.hexArray[i][j].getRow() + "]", (x + hexSize / 2), y + hexSize / 2);
                 }
 
                 //scoot the pencil over
@@ -97,7 +97,7 @@ public class HexMapRenderer {
             }// for j (columns)
 
             //Reset for the next row
-            beginDrawingFromY += (int) 2 * (.8660 * hexSize);
+            beginDrawingFromY += 2 * (.8660 * hexSize);
             x = beginDrawingFromX;
 
             if ((i % 2) != 0) {
@@ -218,14 +218,14 @@ public class HexMapRenderer {
                 //Coordinates
                 if (showCoordinates) {
                     g.setColor(Color.GRAY);
-                    g.drawString("[" + hexMap.hexArray[i][j].getCol() + "," + hexMap.hexArray[i][j].getRow() + "]", (x + (int) (hexSize / 2)), y + (int) (hexSize / 2));
+                    g.drawString("[" + hexMap.hexArray[i][j].getCol() + "," + hexMap.hexArray[i][j].getRow() + "]", (x + hexSize / 2), y + hexSize / 2);
                 }
 
                 //Move the pencil over
                 x = x + (hexSize / 2) + hexSize;
             }
 
-            beginDrawingFromY += (int) 2 * (.8660 * hexSize);
+            beginDrawingFromY += 2 * (.8660 * hexSize);
 
             x = beginDrawingFromX;
             y = y + (int) (2 * .8660 * hexSize);

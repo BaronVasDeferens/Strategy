@@ -42,6 +42,7 @@ public class Testo implements Runnable, KeyListener {
     private BufferedImage loadImage(String imageName) {
 
         BufferedImage loaded = null;
+
         try (InputStream fin = getClass().getResourceAsStream("images/" + imageName)) {
             loaded = ImageIO.read(fin);
             fin.close();
@@ -63,7 +64,6 @@ public class Testo implements Runnable, KeyListener {
             default:
                 break;
         }
-
 
     }
 

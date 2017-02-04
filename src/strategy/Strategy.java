@@ -2,7 +2,9 @@ package strategy;
 
 
 import javax.swing.*;
+import java.awt.*;
 import java.awt.event.*;
+import java.util.Arrays;
 
 import static com.sun.java.accessibility.util.AWTEventMonitor.addKeyListener;
 import static com.sun.java.accessibility.util.AWTEventMonitor.addMouseListener;
@@ -63,18 +65,22 @@ public class Strategy implements KeyListener, MouseListener, MouseWheelListener,
 
     private void goFullscreen(JFrame frame) {
 
-        java.awt.GraphicsDevice devices[] = java.awt.GraphicsEnvironment.getLocalGraphicsEnvironment().getScreenDevices();
 
-        for (int i = 0; i < devices.length; i++) {
-            System.out.println((devices[i].toString()));
-            System.out.println(devices[i].getDisplayMode().getWidth() + "x" + devices[i].getDisplayMode().getHeight());
-            System.out.println("bit depth: " + devices[i].getDisplayMode().getBitDepth());
-            System.out.println("refresh: " + devices[i].getDisplayMode().getRefreshRate());
-            if (devices[i].isFullScreenSupported()) {
+        for (GraphicsDevice graphicsDev: java.awt.GraphicsEnvironment.getLocalGraphicsEnvironment().getScreenDevices()) {
+
+            System.out.println(graphicsDev.toString());
+            System.out.println(graphicsDev.getDisplayMode().getWidth() + "x" + graphicsDev.getDisplayMode().getHeight());
+            System.out.println("bit depth: " + graphicsDev.getDisplayMode().getBitDepth());
+            System.out.println("refresh: " + graphicsDev.getDisplayMode().getRefreshRate());
+            System.out.println("configs: " + Arrays.toString(graphicsDev.getConfigurations()));
+            System.out.println("memory avail: " + graphicsDev.getAvailableAcceleratedMemory());
+
+
+            if (graphicsDev.isFullScreenSupported()) {
                 System.out.println("Fullscreen: yes");
-                devices[i].setFullScreenWindow(frame);
-                fullScreenWidth = devices[i].getDisplayMode().getWidth();
-                fullScreenHeight = devices[i].getDisplayMode().getHeight();
+                graphicsDev.setFullScreenWindow(frame);
+                fullScreenWidth = graphicsDev.getDisplayMode().getWidth();
+                fullScreenHeight = graphicsDev.getDisplayMode().getHeight();
                 return;
             }
         }

@@ -74,6 +74,8 @@ public class RenderThread extends Thread {
 
         while (isAlive) {
 
+            Toolkit.getDefaultToolkit().sync();
+
             cachedImage = update();
             drawOnMe.image = cachedImage;
             drawOnMe.repaint();
