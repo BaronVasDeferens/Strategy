@@ -5,6 +5,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.util.Arrays;
+import java.util.Properties;
 
 import static com.sun.java.accessibility.util.AWTEventMonitor.addKeyListener;
 import static com.sun.java.accessibility.util.AWTEventMonitor.addMouseListener;
@@ -28,6 +29,10 @@ public class Strategy implements KeyListener, MouseListener, MouseWheelListener,
     private void start() {
 
         gameFrame = new JFrame();
+
+        if (System.getProperty("os.name").contains("Windows")) {
+            gameFrame.setUndecorated(true);
+        }
 
         // Set window size and deploy fullscreen mode
         goFullscreen(gameFrame);
